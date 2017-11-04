@@ -90,7 +90,7 @@ func (cp *ContextPool) Put(c *Context) {
 	}
 }
 
-// Use append a new global middleware.
+// Use appends a new global middleware.
 // Global middlewares are called on each request (including static files)
 func Use(filter HandlerFunc) {
 	App.middlewares = append(App.middlewares, filter)
@@ -148,14 +148,16 @@ func (engine *Engine) Init() {
 	}
 
 	// Fancy banner and information about running application
-	Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
-	Log.Info(fmt.Sprintf("%-15s: v%s", "Framework", VERSION))
-	Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
-	Log.Info(fmt.Sprintf("%-15s: %s", "Name", Config.Get("name")))
-	Log.Info(fmt.Sprintf("%-15s: %s", "Author", Config.Get("author")))
-	Log.Info(fmt.Sprintf("%-15s: %s", "Version", Config.Get("version")))
-	Log.Info(fmt.Sprintf("%-15s: %s", "Mode", Config.Get("mode")))
-	Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
+	if !Config.Bool("quite") {
+		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
+		Log.Info(fmt.Sprintf("%-15s: v%s", "Framework", VERSION))
+		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
+		Log.Info(fmt.Sprintf("%-15s: %s", "Name", Config.Get("name")))
+		Log.Info(fmt.Sprintf("%-15s: %s", "Author", Config.Get("author")))
+		Log.Info(fmt.Sprintf("%-15s: %s", "Version", Config.Get("version")))
+		Log.Info(fmt.Sprintf("%-15s: %s", "Mode", Config.Get("mode")))
+		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
+	}
 
 	// Check if caching is enabled: register and assign it to the framework instance
 	if Config.Get("cache") != nil {
