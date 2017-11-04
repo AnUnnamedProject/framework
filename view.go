@@ -52,7 +52,7 @@ func NewView(viewDir string) (Renderer, error) {
 
 	s := &View{
 		viewDir:  viewDir,
-		Template: *template.New("").Delims(Config.Get("template_left").(string), Config.Get("template_right").(string)).Funcs(funcMap),
+		Template: *template.New("").Delims(Config.String("template_left"), Config.String("template_right")).Funcs(funcMap),
 	}
 
 	s.EmbedShortcodes()
@@ -90,11 +90,11 @@ func (s *View) load(dir string) (Renderer, error) {
 
 		s := string(data)
 
-		if Config.Get("compress_html").(bool) {
+		if Config.Bool("compress_html") {
 			s = MinifyHTML([]byte(s))
 		}
 
-		if Config.Get("compress_css").(bool) {
+		if Config.Bool("compress_css") {
 			re := regexp.MustCompile(`<style type="text/css">([\s\S]*)<\/style>`)
 			matches := re.FindStringSubmatch(s)
 			for i := 1; i < len(matches); i++ {
@@ -102,7 +102,7 @@ func (s *View) load(dir string) (Renderer, error) {
 			}
 		}
 
-		if Config.Get("compress_js").(bool) {
+		if Config.Bool("compress_js") {
 			re := regexp.MustCompile(`<script type="text/javascript">([\s\S]*)<\/script>`)
 			matches := re.FindStringSubmatch(s)
 			for i := 1; i < len(matches); i++ {

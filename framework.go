@@ -152,27 +152,27 @@ func (engine *Engine) Init() {
 		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
 		Log.Info(fmt.Sprintf("%-15s: v%s", "Framework", VERSION))
 		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
-		Log.Info(fmt.Sprintf("%-15s: %s", "Name", Config.Get("name")))
-		Log.Info(fmt.Sprintf("%-15s: %s", "Author", Config.Get("author")))
-		Log.Info(fmt.Sprintf("%-15s: %s", "Version", Config.Get("version")))
-		Log.Info(fmt.Sprintf("%-15s: %s", "Mode", Config.Get("mode")))
+		Log.Info(fmt.Sprintf("%-15s: %s", "Name", Config.String("name")))
+		Log.Info(fmt.Sprintf("%-15s: %s", "Author", Config.String("author")))
+		Log.Info(fmt.Sprintf("%-15s: %s", "Version", Config.String("version")))
+		Log.Info(fmt.Sprintf("%-15s: %s", "Mode", Config.String("mode")))
 		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
 	}
 
 	// Check if caching is enabled: register and assign it to the framework instance
 	if Config.Get("cache") != nil {
-		if Config.Get("mode") == DebugMode {
-			Log.Debug(fmt.Sprintf("registering cache: %s", Config.Get("cache")))
+		if Config.String("mode") == DebugMode {
+			Log.Debug(fmt.Sprintf("registering cache: %s", Config.String("cache")))
 		}
 
-		switch Config.Get("cache") {
+		switch Config.String("cache") {
 		case "file":
 			_ = cache.Register("file", cache.NewFileCache)
 		case "memory":
 			_ = cache.Register("memory", cache.NewMemoryCache)
 		}
 
-		engine.cache, err = cache.NewCache(Config.Get("cache").(string), Config.Get("cache_config").(string))
+		engine.cache, err = cache.NewCache(Config.String("cache"), Config.String("cache_config"))
 		if err != nil {
 			Log.Error(err)
 		}
@@ -181,7 +181,7 @@ func (engine *Engine) Init() {
 	// Load translations
 	_, err = os.Stat("i18n")
 	if err == nil {
-		if Config.Get("mode") == DebugMode {
+		if Config.String("mode") == DebugMode {
 			Log.Debug("Importing I18N translations.")
 		}
 		if err := i18n.Load("i18n"); err != nil {
@@ -200,8 +200,8 @@ func (engine *Engine) Init() {
 	// Enable pprof
 	if Config.Get("pprof") != nil {
 		go func() {
-			Log.Info(fmt.Sprintf("pprof enabled and listening on %s", Config.Get("pprof")))
-			Log.Error(http.ListenAndServe(Config.Get("pprof").(string), nil))
+			Log.Info(fmt.Sprintf("pprof enabled and listening on %s", Config.String("pprof")))
+			Log.Error(http.ListenAndServe(Config.String("pprof"), nil))
 		}()
 	}
 }
@@ -210,37 +210,47 @@ func (engine *Engine) Init() {
 func Run() {
 	App.Init()
 
-	Log.Info(fmt.Sprintf("listening on port :%.0f", Config.Get("port").(float64)))
-	Log.Error(http.ListenAndServe(fmt.Sprintf(":%.0f", Config.Get("port").(float64)), App.Router))
+	if Config.String("address") != "" {
+		Log.Info(fmt.Sprintf("listening on %s", Config.String("address")))
+		Log.Error(http.ListenAndServe(Config.String("address"), App.Router))
+	} else {
+		Log.Info(fmt.Sprintf("listening on port :%d", Config.Int("port")))
+		Log.Error(http.ListenAndServe(fmt.Sprintf(":%d", Config.Int("port")), App.Router))
+	}
 }
 
 // RunTLS start HTTPS listening on configured port.
 func RunTLS() {
 	App.Init()
-	Log.Info(fmt.Sprintf("listening TLS on port :%.0f", Config.Get("port").(float64)))
 
-	if Config.Get("cert") == nil || Config.Get("cert_key") == nil {
+	if Config.String("cert") == "" || Config.String("cert_key") == "" {
 		panic("Invalid cert files or key. Please review your configuration.")
 	}
 
-	Log.Error(http.ListenAndServeTLS(fmt.Sprintf(":%.0f", Config.Get("port").(float64)), Config.Get("cert").(string), Config.Get("cert_key").(string), App.Router))
+	if Config.String("address") != "" {
+		Log.Info(fmt.Sprintf("listening TLS on %s", Config.String("address")))
+		Log.Error(http.ListenAndServeTLS(Config.String("address"), Config.String("cert"), Config.String("cert_key"), App.Router))
+	} else {
+		Log.Info(fmt.Sprintf("listening TLS on port :%d", Config.Int("port")))
+		Log.Error(http.ListenAndServeTLS(fmt.Sprintf(":%d", Config.Int("port")), Config.String("cert"), Config.String("cert_key"), App.Router))
+	}
 }
 
 // RunGRPC start gRPC listening on configured port.
 func RunGRPC() {
 	App.Init()
 
-	Log.Info(fmt.Sprintf("listening gRPC on port :%.0f", Config.Get("grpc_port").(float64)))
-	l, err := net.Listen("tcp", fmt.Sprintf(":%.0f", Config.Get("grpc_port").(float64)))
+	Log.Info(fmt.Sprintf("listening gRPC on port :%d", Config.Int("grpc_port")))
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", Config.Int("grpc_port")))
 	if err != nil {
 		Log.Fatalf("failed: %v", err)
 	}
 
 	var options []grpc.ServerOption
 
-	if Config.Get("grpc_cert") != nil && Config.Get("grpc_cert_key") != nil {
+	if Config.String("grpc_cert") != "" && Config.String("grpc_cert_key") != "" {
 		config := &tls.Config{}
-		cert, err := tls.LoadX509KeyPair(Config.Get("grpc_cert").(string), Config.Get("grpc_cert_key").(string))
+		cert, err := tls.LoadX509KeyPair(Config.String("grpc_cert"), Config.String("grpc_cert_key"))
 		if err != nil {
 			Log.Fatal(err)
 		}

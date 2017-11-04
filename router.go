@@ -204,7 +204,7 @@ func (r *Routes) ServeStaticFiles(c *Context) bool {
 	if App.cache != nil {
 		// If requested file is CSS and compress_css is enabled, minify and serve a cached version.
 		// If the file is already minified (.min.css) we don`t perform any additional compression.
-		if path.Ext(req) == ".css" && Config.Get("compress_css").(bool) && !strings.Contains(req, ".min.css") {
+		if path.Ext(req) == ".css" && Config.Bool("compress_css") && !strings.Contains(req, ".min.css") {
 			var css string
 			req = "file:" + req
 
@@ -239,7 +239,7 @@ func (r *Routes) ServeStaticFiles(c *Context) bool {
 
 		// If requested file is JS and compress_js is enabled, minify and serve a cached version.
 		// If the file is already minified (.min.js) we don`t perform any additional compression.
-		if path.Ext(req) == ".js" && Config.Get("compress_js").(bool) && !strings.Contains(req, ".min.js") {
+		if path.Ext(req) == ".js" && Config.Bool("compress_js") && !strings.Contains(req, ".min.js") {
 			var js string
 			req = "file:" + req
 

@@ -80,7 +80,7 @@ var Config Configuration
 
 // DefaultConfig initialize the Config with basic configuration settings.
 func DefaultConfig() *ConfigData {
-	var data JSON
+	data := JSON{}
 
 	data["name"] = "AnUnnamedApp"
 	data["author"] = "AnUnnamedProject"
@@ -101,7 +101,6 @@ func LoadConfig(path string) Configuration {
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Println("unable to load configuration", err)
 		return config
 	}
 
@@ -125,36 +124,28 @@ func (c *ConfigData) Get(key string) interface{} {
 // String returns the config's value by specified key, cast to string if possible.
 // If data type don't match, return an empty string
 func (c *ConfigData) String(key string) string {
-	v := c.Get(key)
-
-	if _, ok := v.(string); !ok {
-		return ""
+	if v, ok := c.Get(key).(string); ok {
+		return v
 	}
-
-	return v.(string)
+	return ""
 }
 
 // Int returns the config's value by specified key, cast to int if possible.
 // If data type don't match, return 0
 func (c *ConfigData) Int(key string) int {
-	v := c.Get(key)
-
-	if _, ok := v.(int); !ok {
-		return 0
+	if v, ok := c.Get(key).(float64); ok {
+		return int(v)
 	}
 
-	return v.(int)
+	return 0
 }
 
 // Bool returns the config's value by specified key, cast to bool if possible.
 // If data type don't match, return false
 func (c *ConfigData) Bool(key string) bool {
-	v := c.Get(key)
-
-	if _, ok := v.(bool); !ok {
-		return false
+	if v, ok := c.Get(key).(bool); ok {
+		return v
 	}
 
-	return v.(bool)
-
+	return false
 }
