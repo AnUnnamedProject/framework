@@ -62,6 +62,7 @@ type (
 
 	// Configuration is the interface for app configuration.
 	Configuration interface {
+		Set(key string, value interface{})
 		Get(key string) interface{}
 		String(key string) string
 		Int(key string) int
@@ -70,7 +71,7 @@ type (
 
 	// ConfigData contains the configuration data
 	ConfigData struct {
-		data map[string]interface{}
+		data JSON
 	}
 )
 
@@ -79,7 +80,7 @@ var Config Configuration
 
 // DefaultConfig initialize the Config with basic configuration settings.
 func DefaultConfig() *ConfigData {
-	data := make(map[string]interface{})
+	var data JSON
 
 	data["name"] = "AnUnnamedApp"
 	data["author"] = "AnUnnamedProject"
@@ -109,6 +110,11 @@ func LoadConfig(path string) Configuration {
 	}
 
 	return config
+}
+
+// Set updates a key with value.
+func (c *ConfigData) Set(key string, value interface{}) {
+	c.data[key] = value
 }
 
 // Get return config's value by specified key.
