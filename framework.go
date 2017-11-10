@@ -148,7 +148,7 @@ func (engine *Engine) Init() {
 	}
 
 	// Fancy banner and information about running application
-	if !Config.Bool("quite") {
+	if !Config.Bool("quiet") {
 		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
 		Log.Info(fmt.Sprintf("%-15s: v%s", "Framework", VERSION))
 		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
