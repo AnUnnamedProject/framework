@@ -18,6 +18,7 @@ import (
 // Renderer is the interface for template rendering.
 type Renderer interface {
 	Render(out io.Writer, name string, data interface{}) error
+	Parse(name string, data []byte) error
 }
 
 var funcMap template.FuncMap
@@ -125,4 +126,11 @@ func (s *View) load(dir string) (Renderer, error) {
 // Render executes the template by name.
 func (s *View) Render(out io.Writer, name string, data interface{}) error {
 	return s.ExecuteTemplate(out, name, data)
+}
+
+// Parse the data template.
+func (s *View) Parse(name string, data []byte) error {
+	t := s.New(name)
+	_, err := t.Parse(string(data))
+	return err
 }
