@@ -100,7 +100,7 @@ func (r *Routes) Add(pattern string, method string, handlers ...HandlerFunc) {
 	route.handlers = reverseHandlers
 	route.params = params
 
-	if !Config.Bool("quiet") {
+	if Mode() == DebugMode {
 		Log.Info(fmt.Sprintf("Adding route [%s] %s", method, pattern))
 	}
 

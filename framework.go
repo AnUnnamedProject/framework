@@ -29,7 +29,7 @@ import (
 )
 
 // VERSION of the Framework.
-const VERSION = "0.5.0"
+const VERSION = "0.5.2"
 
 // App contains a pointer to the framework instance.
 // It's initialized automatically when application starts.
@@ -148,14 +148,17 @@ func (engine *Engine) Init() {
 	}
 
 	// Fancy banner and information about running application
-	if !Config.Bool("quiet") {
+	if Mode() == DebugMode {
 		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
 		Log.Info(fmt.Sprintf("%-15s: v%s", "Framework", VERSION))
 		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
 		Log.Info(fmt.Sprintf("%-15s: %s", "Name", Config.String("name")))
-		Log.Info(fmt.Sprintf("%-15s: %s", "Author", Config.String("author")))
+
+		if Config.String("author") != "" {
+			Log.Info(fmt.Sprintf("%-15s: %s", "Author", Config.String("author")))
+		}
+
 		Log.Info(fmt.Sprintf("%-15s: %s", "Version", Config.String("version")))
-		Log.Info(fmt.Sprintf("%-15s: %s", "Mode", Config.String("mode")))
 		Log.Info(fmt.Sprintf("%s", strings.Repeat("=", 80)))
 	}
 
