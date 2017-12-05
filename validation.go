@@ -49,6 +49,9 @@ var DefaultErrorMessages = map[string]string{
 	"Email":        "must be a valid email address",
 	"IP":           "must be a valid ip address",
 	"Base64":       "must be a valid base64",
+	"String":       "must be a string",
+	"Float64":      "must be a float64",
+	"Bool":         "must be a bool",
 }
 
 // NewValidator returns a new Validator instance
@@ -438,4 +441,31 @@ func (v *Validator) Base64(value string) bool {
 	}
 
 	return regexp.MustCompile("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$").MatchString(value)
+}
+
+// String check if value is a string
+func (v *Validator) String(value interface{}) bool {
+	if _, ok := value.(string); !ok {
+		return false
+	}
+
+	return true
+}
+
+// Float64 check if value is a float64
+func (v *Validator) Float64(value interface{}) bool {
+	if _, ok := value.(float64); !ok {
+		return false
+	}
+
+	return true
+}
+
+// Bool check if value is a bool
+func (v *Validator) Bool(value interface{}) bool {
+	if _, ok := value.(bool); !ok {
+		return false
+	}
+
+	return true
 }
