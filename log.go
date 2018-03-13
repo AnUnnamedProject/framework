@@ -98,9 +98,19 @@ func (l *Logger) Critical(str string) {
 	l.log(CRITICAL, str)
 }
 
+// Criticalf is an alias to log(CRITICAL, str)
+func (l *Logger) Criticalf(format string, a ...interface{}) {
+	l.log(CRITICAL, fmt.Sprintf(format, a))
+}
+
 // Error is an alias to log(ERROR, err)
 func (l *Logger) Error(err error) {
 	l.log(ERROR, err.Error())
+}
+
+// Errorf is an alias to log(ERROR, err)
+func (l *Logger) Errorf(format string, a ...interface{}) {
+	l.log(ERROR, fmt.Errorf(format, a).Error())
 }
 
 // Warning is an alias to log(WARNING, str)
@@ -108,12 +118,27 @@ func (l *Logger) Warning(str string) {
 	l.log(WARNING, str)
 }
 
+// Warningf is an alias to log(WARNING, str)
+func (l *Logger) Warningf(format string, a ...interface{}) {
+	l.log(WARNING, fmt.Sprintf(format, a))
+}
+
 // Info is an alias to log(INFO, str)
 func (l *Logger) Info(str string) {
 	l.log(INFO, str)
 }
 
+// Infof is an alias to log(INFO, str)
+func (l *Logger) Infof(format string, a ...interface{}) {
+	l.log(INFO, fmt.Sprintf(format, a))
+}
+
 // Debug is an alias to log(DEBUG, str)
 func (l *Logger) Debug(str string) {
 	l.log(DEBUG, str)
+}
+
+// Debugf is an alias to log(DEBUG, str)
+func (l *Logger) Debugf(format string, a ...interface{}) {
+	l.log(DEBUG, fmt.Sprintf(format, a))
 }
