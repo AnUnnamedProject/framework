@@ -22,6 +22,14 @@ type (
 )
 
 func (r *Request) IP() string {
+	// cloudflare: cf-connecting-ip
+	if cf := r.Header.Get("cf-connecting-ip"); cf != "" {
+		cf = strings.Split(cf, ",")[0]
+		if cf != "" {
+			return cf
+		}
+	}
+
 	// x-forwarded-for: client, proxy1, proxy2, ...
 	if proxy := r.Header.Get("x-forwarded-for"); proxy != "" {
 		proxy = strings.Split(proxy, ",")[0]
