@@ -86,6 +86,18 @@ func (v *JSONValue) Float64() float64 {
 	return 0
 }
 
+// Int32 converts and returns the value as int32.
+func (v *JSONValue) Int32() int32 {
+	if v == nil {
+		return 0
+	}
+
+	if _, ok := v.data.(float64); ok {
+		return int32(v.data.(float64))
+	}
+	return 0
+}
+
 // Int64 converts and returns the value as int64.
 func (v *JSONValue) Int64() int64 {
 	if v == nil {
